@@ -7,32 +7,20 @@ import {
   ToastAndroid,
   TouchableOpacity,
   Alert,
-  Linking 
 } from "react-native";
-import * as Location from 'expo-location';
+import { Link,useNavigate  } from 'react-router-native';
 import { API_APH } from "@env";
 
-let current_route = '';
 const Control = () => {
   const [userData, setUserData] = React.useState(null);
-
   const [isAvailable, setIsAvailable] = React.useState(false);
-
-  const [latitude, setLatitude] = React.useState('');
-  const [longitude, setLongitude] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [isMapOpen, setIsMapOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     getUserData();
     getAvailability();
   }, []);
 
-  const url = Platform.select({
-    android: `geo:${latitude},${longitude}?q=${address}`,
-  })
-  
-  
   const getUserData = async () => {
     try {
       const response = await fetch(API_APH + "/api/me", {
@@ -41,7 +29,6 @@ const Control = () => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + access_token,
         },
-        timeout: 5000,
       });
 
       if (response.status === 200) {
@@ -98,8 +85,7 @@ const Control = () => {
       alert("Error al obtener datos del usuario. Error: " + error.message);
     }
   };
-  //get available routes from api and alert user if new route found 
-  //with yes or no option to accept or not the route and navigate to map if yes is selected or do nothing if no is selected 
+
   const GetAvailableRoutes = async () => {
     try {
       const response = await fetch(API_APH + "/api/routes/available", {
@@ -133,13 +119,8 @@ const Control = () => {
                 text: "Yes",
                 onPress: () => {
                   current_route = data.routes[0];
-                  setLatitude(current_route.emergency_latitude);
-                  setLongitude(current_route.emergency_longitude);
-                  setAddress(current_route.emergency_address);
-                  setInterval(() => {
-                    getLocationPermission();
-                  }
-                  , 3000);
+                  navigate('/mapa');
+                  
                 },
               },
             ],
@@ -153,85 +134,21 @@ const Control = () => {
       alert("Error al obtener datos del usuario. Error: " + error.message);
     }
   };
-  const startRoute = async () => {
-    try {
-      const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/start", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + access_token,
-        },
-      });
-      if (response.status === 200) {
-        const data = await response.json();
-        console.log(latitude);
-        console.log(longitude);
-        setIsMapOpen(true);
-        Linking.openURL(url);
-      } else {
-        throw new Error("Credenciales inválidas");
-      }
-    } catch (error) {
-      alert("Error al iniciar ruta. Error: " + error.message);
-    }
-  };
-  async function finalizarRuta() {
-    setIsMapOpen(false);
-    console.log("finalizar ruta");
-  }
-  //get location from user and send it to api to update route location 
-  async function getLocationPermission(){
-    let {status} = await Location.requestForegroundPermissionsAsync();
-    if(status !== 'granted'){
-      alert('Permission to access location was denied');
-      return;
-    }
-    let location = await Location.getCurrentPositionAsync({});
-    try {
-      const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/location", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + access_token,
-        },
-        body: JSON.stringify({
-          latitude: location.coords.latitude.toString(),
-          longitude: location.coords.longitude.toString()
-        })
-      });
-      
-      if (response.status === 200) {
-        const data = await response.json();
-      } else {
-        throw new Error("Credenciales inválidas");
-      }
-    } catch (error) {
-      alert("Error al iniciar ruta. Error: " + error.message);
-    }    
-  };
 
   return (
     <View style={styles.container}>
       {userData ? (
         <View>
-          <Text style={styles.title}>Bienvenido: {userData.name}</Text>
+          <Text style={styles.title}>{userData.name}</Text>
           <Text style={styles.subtitle}>Correo: {userData.email}</Text>
           <Text style={styles.subtitle}>Centro: {userData.center.name}</Text>
-          <Text style={styles.subtitle}>
-            Provincia: {userData.province.name}
-          </Text>
+          <Text style={styles.subtitle}>Provincia: {userData.province.name}</Text>
           <Text style={styles.subtitle}>Zona: {userData.zone.name}</Text>
-          <Text style={styles.subtitle}>
-            Institucion: {userData.institution.name}
-          </Text>
-          <Text style={styles.subtitle}>
-            Tipo de Usuario: {userData.usertype.name}
-          </Text>
-          <Text style={styles.subtitle}>
-            Recurso: {userData.resource.name}
-          </Text>
+          <Text style={styles.subtitle}>Institución: {userData.institution.name}</Text>
+          <Text style={styles.subtitle}>Tipo de usuario: {userData.usertype.name}</Text>
+          <Text style={styles.subtitle}>Recurso: {userData.resource.name}</Text>
           <View style={styles.sliderContainer}>
-            <Text style={styles.subtitle}>Habilitado?:</Text>
+            <Text style={styles.subtitle}>Disponibilidad:</Text>
             <Switch
               trackColor={{ false: "#767577", true: "#81b0ff" }}
               thumbColor={isAvailable ? "#f5dd4b" : "#f4f3f4"}
@@ -246,26 +163,9 @@ const Control = () => {
           >
             <Text style={styles.buttonText}>Buscar Rutas</Text>
           </TouchableOpacity>
-
-          {!isMapOpen && (
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: "green" }]}
-            onPress={startRoute}
-          >
-            <Text style={styles.buttonText}>Abrir Mapa</Text>
-          </TouchableOpacity>
-          )}
-          {isMapOpen && (
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: "green" }]}
-            onPress={finalizarRuta}
-          >
-            <Text style={styles.buttonText}>Finalizar Ruta</Text>
-          </TouchableOpacity>
-          )}
         </View>
       ) : (
-        <Text>Loading...</Text>
+        <Text>Cargando...</Text>
       )}
     </View>
   );
