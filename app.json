@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.loannes21.ambulanciasaph"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b75dcdfa-1bc0-432f-abae-7a98e47cb23d"
+      }
+    },
+    "owner": "loannes21"
   }
 }
