@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { Alert, StyleSheet,View,TouchableOpacity,Text } from 'react-native';
 import MapView,{Marker} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
+import { useNavigate  } from 'react-router-native';
 import {GOOGLE_MAPS_KEY,API_APH } from '@env';
 
 
@@ -25,6 +26,7 @@ const Mapa= () =>  {
   });
 
   const [isInEmergency, setisInEmergency] = React.useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -43,7 +45,7 @@ const Mapa= () =>  {
           
         },
         {
-          text: "Yes",
+          text: "Si",
           onPress: () => {
             startRoute();
             getPermission();
@@ -80,7 +82,6 @@ const Mapa= () =>  {
     let {status} = await Location.requestForegroundPermissionsAsync();
     if(status !== 'granted'){
       alert('Permission to access location was denied');
-      return;
     }
   }
   async function getLocation(){  
@@ -111,6 +112,47 @@ const Mapa= () =>  {
       alert("Error al iniciar ruta. Error: " + error.message);
     }    
     
+  }
+  async function Recogido(){
+    try {
+      const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/informPickedUp", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + access_token,
+        },
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        setisInEmergency(true);
+        alert("Recogido");
+      } else {
+        throw new Error("Credenciales inválidas");
+      }
+    } catch (error) {
+      alert("Error al iniciar ruta. Error: " + error.message);
+    }
+  }
+
+
+  async function finalizarRuta(){
+    try {
+      const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/finish", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + access_token,
+        },
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        navigate('/control');
+      } else {
+        throw new Error("Credenciales inválidas");
+      }
+    } catch (error) {
+      alert("Error al finalizar ruta. Error: " + error.message);
+    }
   }
 
   return (
@@ -151,11 +193,12 @@ const Mapa= () =>  {
           strokeColor='blue'
           strokeWidth={3}
          />
-      </MapView>
+        </MapView>
       {!isInEmergency && (
+
           <TouchableOpacity
             style={[styles.button, { backgroundColor: "green" }]}
-            onPress={startRoute}
+            onPress={Recogido}
           >
             <Text style={styles.buttonText}>Recogido</Text>
           </TouchableOpacity>

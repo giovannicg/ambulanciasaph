@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TouchableOpacity,View, TextInput,Text,StyleSheet } from 'react-native';
 import {API_APH} from '@env';
-import { Link,useNavigate  } from 'react-router-native';
+import { useNavigate  } from 'react-router-native';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +20,6 @@ const LoginScreen = () => {
       body: JSON.stringify({ email, password }),
     });
     if(response.status==200){
-      //alert('Credenciales válidas. Bienvenido.');
       const data = await response.json();
       access_token = data.access_token;
       navigate('/control');
@@ -32,10 +31,10 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.login}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>Inicio de Sesión</Text>
         <TextInput 
           style={styles.input} 
-          placeholder="Email" 
+          placeholder="Correo electrónico" 
           value={email} 
           onChangeText={setEmail} 
           keyboardType="email-address" 
@@ -45,7 +44,7 @@ const LoginScreen = () => {
         />
         <TextInput 
           style={styles.input} 
-          placeholder="Password" 
+          placeholder="Contraseña" 
           value={password} 
           onChangeText={setPassword} 
           secureTextEntry 
@@ -53,7 +52,7 @@ const LoginScreen = () => {
           textContentType="password" 
         />
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
       </View>
     </View>

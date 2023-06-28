@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ambulanciasaph",
+    "name": "AmbulanciaAph",
     "slug": "ambulanciasaph",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/image/ambulance.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { Link,useNavigate  } from 'react-router-native';
+import { useNavigate  } from 'react-router-native';
 import { API_APH } from "@env";
 
 const Control = () => {
@@ -103,12 +103,12 @@ const Control = () => {
         //if yes, navigate to route
         //if no, do nothing
         if (data.routes.length == 0) {
-          alert("No new routes found");
+          alert("No hay rutas disponibles");
           return;
         } else {
           Alert.alert(
-            "New Route Found: " + data.routes[0].emergency_address,
-            "Do you want to accept this route?",
+            "Nueva ruta encontrada: " + data.routes[0].emergency_address,
+            "Quieres aceptar esta ruta?",
             [
               {
                 text: "No",
@@ -116,7 +116,7 @@ const Control = () => {
                 style: "cancel",
               },
               {
-                text: "Yes",
+                text: "Si",
                 onPress: () => {
                   current_route = data.routes[0];
                   navigate('/mapa');
