@@ -25,9 +25,12 @@ const Mapa= () =>  {
   });
 
   const [isInEmergency, setisInEmergency] = React.useState(false);
-  
 
   React.useEffect(() => {
+    const interval = setInterval(() => {
+      getLocation();
+      console.log('This will run every second!');
+    }, 3000);
     //prompt yes no to start route
     Alert.alert(
       "Iniciar ruta",
@@ -35,26 +38,20 @@ const Mapa= () =>  {
       [
         {
           text: "No",
-          onPress: () => console.log("No Pressed"),
+          onPress: () => {console.log("No Pressed"); clearInterval(interval);},
           style: "cancel",
+          
         },
         {
           text: "Yes",
           onPress: () => {
             startRoute();
-            setInterval(() => {
-              getLocationPermission();
-            }
-            , 3000);
-
+            getPermission();
           },
         },
       ],
       { cancelable: false }
     );
-
-    
-  
     return () => clearInterval(interval);
   }, []);
 
@@ -79,13 +76,14 @@ const Mapa= () =>  {
     }
   };
 
-
-  async function getLocationPermission(){
+  async function getPermission(){
     let {status} = await Location.requestForegroundPermissionsAsync();
     if(status !== 'granted'){
       alert('Permission to access location was denied');
       return;
     }
+  }
+  async function getLocation(){  
     let location = await Location.getCurrentPositionAsync({});
     try {
       const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/location", {
