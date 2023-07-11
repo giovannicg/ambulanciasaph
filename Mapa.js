@@ -11,6 +11,12 @@ const ambulanceIcon = require('./assets/image/ambulance.png');
 const hospitalIcon = require('./assets/image/hospital.png');
 const emergenceIcon = require('./assets/image/emergencia.png');
 
+/**
+ * Renders a map view with markers for the origin, emergency location, and destination.
+ * Allows the user to start and finish a route and update the current location.
+ *
+ * @return {View} The rendered map view with markers and buttons.
+ */
 const Mapa= () =>  {
   const [origin, setOrigin] = React.useState({
     latitude:parseFloat(current_route.start_latitude),
@@ -58,6 +64,13 @@ const Mapa= () =>  {
   }, []);
 
   //function startRoute calls api with put method to start route
+  /**
+   * This code defines a function called startRoute which makes an API request to start a route.
+   *  It uses the fetch function to send a PUT request to a specific API endpoint. 
+   * The request includes headers with the content type and an authorization token. 
+   * If the response status is 200, it alerts "Ruta iniciada" (route started). 
+   * If there is an error or the response status is not 200, it throws an error and alerts the error message.
+   */
   const startRoute = async () => {
     try {
       const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/start", {
@@ -78,12 +91,22 @@ const Mapa= () =>  {
     }
   };
 
+  /**
+   * Requests foreground permissions for location access.
+   *
+   * @return {Promise} An async function that resolves with the status of the permission request.
+   */
   async function getPermission(){
     let {status} = await Location.requestForegroundPermissionsAsync();
     if(status !== 'granted'){
       alert('Permission to access location was denied');
     }
   }
+  /**
+   * Retrieves the current location and sends it to the server.
+   *
+   * @return {Promise<void>} No return value.
+   */
   async function getLocation(){  
     let location = await Location.getCurrentPositionAsync({});
     try {
@@ -113,6 +136,11 @@ const Mapa= () =>  {
     }    
     
   }
+/**
+ * An asynchronous function that performs the "Recogido" operation.
+ *
+ * @return {Promise<void>} - A Promise that resolves when the operation is complete.
+ */
   async function Recogido(){
     try {
       const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/informPickedUp", {
@@ -135,6 +163,11 @@ const Mapa= () =>  {
   }
 
 
+  /**
+   * Finalizes the route.
+   *
+   * @return {Promise<void>} - Resolves when the route is finished successfully.
+   */
   async function finalizarRuta(){
     try {
       const response = await fetch(API_APH + "/api/routes/"+current_route.id+"/finish", {

@@ -3,11 +3,21 @@ import { TouchableOpacity,View, TextInput,Text,StyleSheet } from 'react-native';
 import {API_APH} from '@env';
 import { useNavigate  } from 'react-router-native';
 
+/**
+ * Renders the login screen and handles the login functionality.
+ *
+ * @return {ReactElement} The rendered login screen.
+ */
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+/**
+ * Realize a post request to the API_APH/api/login API with the email and password data and display the bearer token received in the console using fetch.
+ *
+ * @return {Promise<void>} No return value.
+ */
   const handleLogin = async () => {
     //realizar un request de tipo post a la api DE API_APH/api/login con los datos de email y password y mostrar el baerer token recibido en la consola
     //utilizando fetch

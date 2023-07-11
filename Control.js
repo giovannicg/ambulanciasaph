@@ -11,6 +11,11 @@ import {
 import { useNavigate  } from 'react-router-native';
 import { API_APH } from "@env";
 
+/**
+ * Renders a control component that displays user data and allows the user to update their availability and search for routes.
+ *
+ * @returns {JSX.Element} The rendered control component.
+ */
 const Control = () => {
   const [userData, setUserData] = React.useState(null);
   const [isAvailable, setIsAvailable] = React.useState(false);
@@ -21,6 +26,12 @@ const Control = () => {
     getAvailability();
   }, []);
 
+  /**
+   * Fetches user data from the API and sets the retrieved data in the state.
+   *
+   * @param {string} access_token - The access token used for authentication.
+   * @return {void} This function does not return a value.
+   */
   const getUserData = async () => {
     try {
       const response = await fetch(API_APH + "/api/me", {
@@ -42,6 +53,11 @@ const Control = () => {
     }
   };
 
+  /**
+   * Fetches the availability of a user from the API.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the availability is fetched successfully.
+   */
   const getAvailability = async () => {
     try {
       const response = await fetch(API_APH + "/api/user/availability", {
@@ -63,6 +79,11 @@ const Control = () => {
     }
   };
 
+/**
+ * Handles the change of the resource value asynchronously.
+ *
+ * @return {Promise<void>} - A promise that resolves when the resource value change is handled.
+ */
   const handleResourceValueChange = async () => {
     try {
       const response = await fetch(API_APH + "/api/user/availability", {
@@ -86,6 +107,11 @@ const Control = () => {
     }
   };
 
+  /**
+   * Retrieves the available routes from the API.
+   *
+   * @return {Promise} A promise that resolves to the available routes.
+   */
   const GetAvailableRoutes = async () => {
     try {
       const response = await fetch(API_APH + "/api/routes/available", {

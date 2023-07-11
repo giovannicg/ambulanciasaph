@@ -7,6 +7,11 @@ import Control from './Control';
 let access_token = null;
 let current_route = null;
 
+/**
+ * Renders the main application component.
+ *
+ * @return {ReactElement} The rendered application component.
+ */
 const App = () => {
   
   return (
