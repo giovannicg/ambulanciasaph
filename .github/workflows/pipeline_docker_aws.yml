@@ -1,0 +1,39 @@
+name: Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Checkout del código fuente
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Paso 2: Configurar AWS CLI
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-3
+
+      # Paso 3: Iniciar sesión en ECR
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Paso 4: Construir la imagen Docker
+      - name: Build Docker image
+        run: |
+          docker build -t my-app:latest .
+          docker tag my-app:latest 637423403956.dkr.ecr.eu-west-3.amazonaws.com/dev/my_app:latest
+
+      # Paso 5: Subir la imagen a ECR
+      - name: Push Docker image to ECR
+        run: |
+          docker push 637423403956.dkr.ecr.eu-west-3.amazonaws.com/dev/my_app:latest
